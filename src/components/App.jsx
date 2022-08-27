@@ -6,13 +6,13 @@ import { ContactList } from "../components/ContactList";
 import { Filter } from "./Filter";
 import { Loader } from "./Loader/Loader";
 import addId from '../helpers/addId';
-import {contactsOperations, contactsSelectors} from "../redux/contacts";
+import {contactsOperations, contactsSelectors} from "redux/contacts";
 
 export const App = () => {
   const dispatch = useDispatch();
   //store
   const contacts = useSelector(contactsSelectors.getContacts);
-  const isLoading = useSelector(contactsSelectors.isLoading);
+  const isLoading = useSelector(contactsSelectors.isLoading); 
   //const stateFilterValue = useSelector(state => state.filter);
   useEffect(() => { 
     dispatch(contactsOperations.axiosContacts());

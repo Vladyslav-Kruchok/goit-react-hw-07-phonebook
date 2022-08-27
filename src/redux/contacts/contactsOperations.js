@@ -1,12 +1,8 @@
 import * as contactsAPI from '../../services/contactsApi';
-import * as contactsActions from './contactsActions';
+//import * as contactsActions from './contactsActions';
+import { createAsyncThunk } from '@reduxjs/toolkit';
 
-export const axiosContacts = () => async dispatch => { 
-    dispatch(contactsActions.axiosContactsRequest());
-    try {
-        const contacts = await contactsAPI.getContacts();
-        dispatch(contactsActions.axiosContactsSuccess(contacts));
-    } catch (error) {
-        dispatch(contactsActions.axiosContactsError(error));
-    }
-};
+export const axiosContacts = createAsyncThunk('contacts/axiosContacts', async () => { 
+    const contacts = await contactsAPI.getContacts();
+    return contacts;
+});
