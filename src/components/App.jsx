@@ -3,15 +3,16 @@ import React, {useEffect} from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { ContactForm } from "../components/ContactForm";
 import { ContactList } from "../components/ContactList";
-import { Filter } from "../components/Filter";
-import viewContacts from '../helpers/viewContacts';
+import { Filter } from "./Filter";
+import { Loader } from "./Loader/Loader";
 import addId from '../helpers/addId';
-import * as contactsOperations from "../redux/contacts/contactsOperations";
+import {contactsOperations, contactsSelectors} from "../redux/contacts";
 
 export const App = () => {
   const dispatch = useDispatch();
   //store
-  const contacts = useSelector(state => state.contacts.entities);
+  const contacts = useSelector(contactsSelectors.getContacts);
+  const isLoading = useSelector(contactsSelectors.isLoading);
   //const stateFilterValue = useSelector(state => state.filter);
   useEffect(() => { 
     dispatch(contactsOperations.axiosContacts());
@@ -22,12 +23,14 @@ export const App = () => {
     //typeof=object
     //data ==>> {name: 'Dustin Beck', number: '+1 (886) 951-7896'}
     const dataPlusId = addId(data);
+    console.log(dataPlusId);
     //dispatch(addItem(dataPlusId));
     //dispatch(contactsOperations.axiosContacts());
   }
   //del item in ContactList
   const extListOnClick = (e) => {
     const id = e.target.id;
+    console.log(id);
     //dispatch(removeItem(id));
   };
   //update state filter
@@ -42,7 +45,7 @@ export const App = () => {
         <ContactForm onSubmit={extFormOnSubmit } />
         <h2>Contacts</h2>
         <Filter onInput={extInputOnInput} />
-        
+        {isLoading && <Loader/>}
         {contacts && <ContactList 
           contacts={contacts}
           onClick={extListOnClick} />}
