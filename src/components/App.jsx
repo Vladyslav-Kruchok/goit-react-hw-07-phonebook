@@ -1,9 +1,4 @@
-import React from "react";
-
-import {  addItem,
-          removeItem,
-          addFilter,}
-from './Redux/store';
+import React, {useEffect} from "react";
 
 import { useSelector, useDispatch } from "react-redux";
 import { ContactForm } from "../components/ContactForm";
@@ -11,29 +6,33 @@ import { ContactList } from "../components/ContactList";
 import { Filter } from "../components/Filter";
 import viewContacts from '../helpers/viewContacts';
 import addId from '../helpers/addId';
+import * as contactsOperations from "../redux/contacts/contactsOperations";
 
 export const App = () => {
   const dispatch = useDispatch();
   //store
-  const stateItemValue = useSelector(state => state.items);
-  const stateFilterValue = useSelector(state => state.filter);
-
+  const contacts = useSelector(state => state.contacts.entities);
+  //const stateFilterValue = useSelector(state => state.filter);
+  useEffect(() => { 
+    dispatch(contactsOperations.axiosContacts());
+  }, [dispatch]);
   //#region ON_FUNC #
   //(import) Add to store Data from ContactForm
   const extFormOnSubmit = (data) => {
     //typeof=object
     //data ==>> {name: 'Dustin Beck', number: '+1 (886) 951-7896'}
     const dataPlusId = addId(data);
-    dispatch(addItem(dataPlusId));
+    //dispatch(addItem(dataPlusId));
+    //dispatch(contactsOperations.axiosContacts());
   }
   //del item in ContactList
   const extListOnClick = (e) => {
     const id = e.target.id;
-    dispatch(removeItem(id));
+    //dispatch(removeItem(id));
   };
   //update state filter
   const extInputOnInput = (e) => {
-    dispatch(addFilter(e.target.value));
+    //dispatch(addFilter(e.target.value));
   };
   //#endregion #
 
@@ -43,8 +42,9 @@ export const App = () => {
         <ContactForm onSubmit={extFormOnSubmit } />
         <h2>Contacts</h2>
         <Filter onInput={extInputOnInput} />
-        {stateItemValue && <ContactList 
-          contacts={viewContacts(stateFilterValue,stateItemValue)}
+        
+        {contacts && <ContactList 
+          contacts={contacts}
           onClick={extListOnClick} />}
       </div>
     );
