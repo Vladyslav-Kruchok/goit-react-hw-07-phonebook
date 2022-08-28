@@ -7,7 +7,17 @@ export async function getContacts() {
     return data;
 };
 
-export async function getContact(contactId) { 
-        const { data } = await axios.get(`/contacts/${contactId}`);
+export async function addContact(contacts) { 
+    const { data } = await axios.post(`/contacts/`, contacts);
+    return data;
+};
+
+export async function delContact(contactId) { 
+    const { data } = await axios.delete(`/contacts/${contactId}`);
+    return data;
+};
+
+export async function findContact(filter) { 
+    const { data } = await axios.get(`/contacts?filter=${filter}`);
     return data;
 };

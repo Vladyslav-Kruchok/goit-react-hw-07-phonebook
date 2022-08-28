@@ -1,23 +1,28 @@
 import { createReducer, combineReducers } from "@reduxjs/toolkit";
-import { axiosContacts } from "./contactsOperations";
+import { axiosGetContacts, axiosFindContacts } from "./contactsOperations";
 
 const entities = createReducer([], {
-[axiosContacts.fulfilled]: (_, action) => action.payload
+    [axiosGetContacts.fulfilled]: (_, action) => action.payload,
+    [axiosFindContacts.fulfilled]: (_, action) => action.payload
 });
 
 const isLoading = createReducer(false, {
-    [axiosContacts.pending]: () => true,
-    [axiosContacts.fulfilled]: () => false,
-    [axiosContacts.rejected]: () => false
+    [axiosGetContacts.pending]: () => true,
+    [axiosGetContacts.fulfilled]: () => false,
+    [axiosGetContacts.rejected]: () => false
 });
 
 const error = createReducer(null, {
-    [axiosContacts.pending]: () => null,
-    [axiosContacts.rejected]: (_, action) => action.payload
+    [axiosGetContacts.pending]: () => null,
+    [axiosGetContacts.rejected]: (_, action) => action.payload
 });
 
+const filter = createReducer('', {
+    [axiosFindContacts.fulfilled]: (state, action) => action.meta.arg
+});
 export default combineReducers({
     entities,
     isLoading,
-    error
+    error,
+    filter
 });

@@ -1,41 +1,69 @@
 import React, {useEffect} from "react";
-
 import { useSelector, useDispatch } from "react-redux";
+
 import { ContactForm } from "../components/ContactForm";
 import { ContactList } from "../components/ContactList";
 import { Filter } from "./Filter";
 import { Loader } from "./Loader/Loader";
-import addId from '../helpers/addId';
-import {contactsOperations, contactsSelectors} from "redux/contacts";
+
+import {contactsOperations, contactsSelectors} from "../redux/contacts";
 
 export const App = () => {
   const dispatch = useDispatch();
   //store
   const contacts = useSelector(contactsSelectors.getContacts);
-  const isLoading = useSelector(contactsSelectors.isLoading); 
-  //const stateFilterValue = useSelector(state => state.filter);
+  const isLoading = useSelector(contactsSelectors.isLoading);
+  const filter = useSelector(contactsSelectors.filter); 
+  
+  const update = (data, status, filter = '') => { 
+    // get all contacts
+    if (data === status && !filter) {
+      dispatch(contactsOperations.axiosGetContacts());
+    };
+    // get filtered contacts by filter
+    if (data === status && filter) {
+      dispatch(contactsOperations.axiosFindContacts(filter));
+    };
+  };
+  
+  //get all contactsxnj
   useEffect(() => { 
-    dispatch(contactsOperations.axiosContacts());
+    dispatch(contactsOperations.axiosGetContacts());
   }, [dispatch]);
-  //#region ON_FUNC #
+  
+  //#region FUNC #
   //(import) Add to store Data from ContactForm
-  const extFormOnSubmit = (data) => {
-    //typeof=object
-    //data ==>> {name: 'Dustin Beck', number: '+1 (886) 951-7896'}
-    const dataPlusId = addId(data);
-    console.log(dataPlusId);
-    //dispatch(addItem(dataPlusId));
-    //dispatch(contactsOperations.axiosContacts());
+  const extFormOnSubmit = (contact) => {
+    //const contact ={name: 'Dustin Beck', number: '+1 (886) 951-7896'}
+    let isContact;
+    dispatch(contactsOperations.axiosFindContacts(contact.name)).then(data => {
+      isContact = !!data.payload.length;
+        if (!isContact) {
+          dispatch(contactsOperations.axiosAddContact(contact)).then(request => {
+              update(request.meta.requestStatus, "fulfilled");
+            });
+        } else {
+          alert(`${contact.name} is already in a contact`);
+          update(true, true);
+          return;
+        }
+      });
   }
-  //del item in ContactList
+  
+  //del contact, and update (all contacts)
   const extListOnClick = (e) => {
     const id = e.target.id;
-    console.log(id);
-    //dispatch(removeItem(id));
+    dispatch(contactsOperations.axiosDelContact(id)).then(data => {
+        update(data.meta.requestStatus, "fulfilled", filter);
+      });
   };
-  //update state filter
+  
+  // get filtered contacts by filter and update (filtered contacts)
   const extInputOnInput = (e) => {
-    //dispatch(addFilter(e.target.value));
+    const filterValue = e.target.value;
+    dispatch(contactsOperations.axiosFindContacts(filterValue)).then(data => {
+      update(data.meta.requestStatus, "fulfilled", filterValue);
+      });
   };
   //#endregion #
 
