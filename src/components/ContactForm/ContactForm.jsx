@@ -1,15 +1,31 @@
-import React, { useState } from "react";
-import PropsType from "prop-types";
-import styles from "./ContactForm.module.css";
+import React, { useState } from 'react';
+import { useDispatch } from 'react-redux';
+import styles from './ContactForm.module.css';
+import { nanoid } from 'nanoid';
+import { contactsOperations } from "../../redux/contacts";
 
-export const ContactForm = ({onSubmit}) => { 
-const [name, setNameContact] = useState("");
-const [number, setNumberContact] = useState("");
+export const ContactForm = () => { 
+    const [name, setNameContact] = useState("");
+    const [number, setNumberContact] = useState("");
+    
+    const dispatch = useDispatch();
 
-//transfer to external file (export)
     const formOnSubmit = (e) => {
         e.preventDefault();
-        onSubmit({ name, number });
+        const id = nanoid();
+        let isContact;
+        dispatch(contactsOperations.axiosFindContacts(name)).then(data => {
+        isContact = !!data.payload.length;
+            if (!isContact) {
+            dispatch(contactsOperations.axiosAddContact({id , name, number })).then(() => {
+                dispatch(contactsOperations.axiosGetContacts());
+                });
+            } else {
+                alert(`${contact.name} is already in a contact`);
+                dispatch(contactsOperations.axiosGetContacts());
+                return;
+            }
+        });
         resetFormInput();
     };
     const contact = {
@@ -62,7 +78,4 @@ const [number, setNumberContact] = useState("");
             <button className={styles.button} type="submit">Add contacts</button>
         </form>
     );
-};
-ContactForm.protoType = {
-onSubmit: PropsType.func.isRequired
 };
