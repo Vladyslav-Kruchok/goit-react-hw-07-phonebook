@@ -22,7 +22,6 @@ export const ContactForm = () => {
                 });
             } else {
                 alert(`${contact.name} is already in a contact`);
-                dispatch(contactsOperations.axiosGetContacts());
                 return;
             }
         });
