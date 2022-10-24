@@ -1,9 +1,9 @@
 import { createReducer, combineReducers } from "@reduxjs/toolkit";
-import { axiosGetContacts, axiosFindContacts } from "./contactsOperations";
+import { axiosGetContacts } from "./contactsOperations";
+import * as contactsActions from './contactsActions';
 
 const entities = createReducer([], {
     [axiosGetContacts.fulfilled]: (_, action) => action.payload,
-    [axiosFindContacts.fulfilled]: (_, action) => action.payload
 });
 
 const isLoading = createReducer(false, {
@@ -18,8 +18,11 @@ const error = createReducer(null, {
 });
 
 const filter = createReducer('', {
-    [axiosFindContacts.fulfilled]: (state, action) => action.meta.arg
+    [contactsActions.addFilter]: (_, action) => {
+        return action.payload;
+    }
 });
+
 export default combineReducers({
     entities,
     isLoading,
