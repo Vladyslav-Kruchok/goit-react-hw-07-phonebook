@@ -5,6 +5,8 @@ import { contactsOperations, contactsSelectors } from "../../redux/contacts";
 import { Loader } from "../Loader/Loader";
 import viewContacts from '../../services/viewContacts';
 
+import { useGetPokemonByNameQuery } from '../../redux/rtk';
+
 export const ContactList = () => {
     const dispatch = useDispatch();
     //store
@@ -12,6 +14,10 @@ export const ContactList = () => {
     const filter = useSelector(contactsSelectors.filter); 
     const isLoading = useSelector(contactsSelectors.isLoading);
     const filteredContact = viewContacts(filter, contacts);
+
+    const { data, error } = useGetPokemonByNameQuery('bulbasaur', {
+        skip: filter === ''
+    });
 
     //get all contacts
     useEffect(() => { 
